@@ -10,14 +10,19 @@ import styles from './stack-page.module.css';
 export const StackPage: React.FC = () => {
   const [element, setElement] = useState<string>('');
   const [arr, setArr] = useState<{element: string, state: ElementStates}[]>([]);
-  const [loader, setLoader] = useState<boolean>(false);
+  const [loader, setLoader] = useState<ActiveStackButton>();
+  enum ActiveStackButton {
+    Add = 'add',
+    Delete = 'delete',
+    Clear = 'clear'
+  } 
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setElement(e.currentTarget.value);
   }
 
   async function handleAddButton () {
-    setLoader(true);
+    setLoader(ActiveStackButton.Add);
     stack.push(element);
     setElement('');
     const workArr = stack.getContainer();
@@ -35,7 +40,7 @@ export const StackPage: React.FC = () => {
     setArr(workArr.map(item => {
       return {element: item, state: ElementStates.Default}
     }))
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const timer = (ms: number) => {
@@ -43,7 +48,7 @@ export const StackPage: React.FC = () => {
   }
 
   async function handleDeleteButton () {
-    setLoader(true);
+    setLoader(ActiveStackButton.Delete);
     let workArr = [...stack.getContainer()];
     stack.pop();
 
@@ -62,15 +67,16 @@ export const StackPage: React.FC = () => {
     });
     
     setArr([...doneArr]);
-    setLoader(false);
+    setLoader(undefined);
   }
   const handleClearButton = () => {
-    setLoader(true);
-    for(let i = 0; i < stack.getSize(); i++) {
+    setLoader(ActiveStackButton.Clear);
+    for(let i = 0; i < stack.getSize(); i) {
       stack.pop();
+      console.log(stack.getSize())
     }
     setArr([])
-    setLoader(false);
+    setLoader(undefined);
   }
   
   return (
@@ -83,20 +89,38 @@ export const StackPage: React.FC = () => {
           onChange={handleInputChange}
           extraClass={`${styles.input} ${styles.mr25}`} />
         <Button 
-          isLoader={loader}
-          disabled={element ? false : true}
+          isLoader={loader === ActiveStackButton.Add ? true : false}
+          disabled={
+            element
+              ? loader && loader !== ActiveStackButton.Add
+                ? true
+                : false
+              : true
+          }
           text="Добавить"
           onClick={handleAddButton}
           extraClass={styles.mr25}/>
         <Button
-          isLoader={loader}
-          disabled={arr[0] ? false : true}
+          isLoader={loader === ActiveStackButton.Delete ? true : false}
+          disabled={
+            arr[0]
+              ? loader && loader !== ActiveStackButton.Delete
+                ? true
+                : false
+              : true
+          }
           text="Удалить"
           onClick={handleDeleteButton}
           extraClass={styles.mr100}/>
         <Button
-          isLoader={loader}
-          disabled={arr[0] ? false : true}
+          isLoader={loader === ActiveStackButton.Clear ? true : false}
+          disabled={
+            arr[0]
+              ? loader && loader !== ActiveStackButton.Clear
+                ? true
+                : false
+              : true
+          }
           text="Очистить"
           onClick={handleClearButton}/>
       </div>

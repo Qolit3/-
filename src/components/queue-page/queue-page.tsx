@@ -13,7 +13,13 @@ export const QueuePage: React.FC = () => {
   const [element, setElement] = useState<string>('');
   const [arr, setArr] = useState<{ element: string | undefined, state: ElementStates }[]>([]);
   const [clear, setClear] = useState<boolean>(false);
-  const [loader, setLoader] = useState<boolean>(false);
+  const [loader, setLoader] = useState<ActiveQueueButton>();
+
+  enum ActiveQueueButton {
+    Add = 'add',
+    Delete = 'delete',
+    Clear = 'clear' 
+  }
 
   useEffect(() => {
     const workArr = queue.getContainer();
@@ -36,7 +42,7 @@ export const QueuePage: React.FC = () => {
   }
 
   async function handleAddButton() {
-    setLoader(true);
+    setLoader(ActiveQueueButton.Add);
     queue.enqueue(element);
     setElement('');
     const workArr = queue.getContainer();
@@ -54,11 +60,11 @@ export const QueuePage: React.FC = () => {
     setArr(workArr.map(item => {
       return { element: item, state: ElementStates.Default }
     }))
-    setLoader(false);
+    setLoader(undefined);
   }
 
   async function handleDeleteButton() {
-    setLoader(true);
+    setLoader(ActiveQueueButton.Delete);
     let workArr = [...queue.getContainer()];
     queue.dequeue();
 
@@ -75,16 +81,17 @@ export const QueuePage: React.FC = () => {
     setArr(workArr.map(item => {
       return { element: item, state: ElementStates.Default }
     }))
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const handleClearButton = () => {
-    setLoader(true);
-    for (let i = queue.getHead(); i < queue.getTail(); i++) {
+    setLoader(ActiveQueueButton.Clear);
+    /*for (let i = queue.getHead(); i < queue.getTail(); i++) {
       queue.dequeue()
-    }
+    }*/
+    queue.clear();
     setClear(!clear);
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const timer = (ms: number) => {
@@ -96,20 +103,38 @@ export const QueuePage: React.FC = () => {
       <div className={styles.input_box}>
         <Input maxLength={4} isLimitText={true} value={element} onChange={handleInputChange} extraClass={`${styles.input} ${styles.mr25}`} />
         <Button
-          disabled={element ? false : true}
-          isLoader={loader}
+          disabled={
+            element
+              ? loader && loader !== ActiveQueueButton.Add
+                ? true
+                : false
+              : true
+          }
+          isLoader={loader === ActiveQueueButton.Add ? true : false}
           text="Добавить"
           onClick={handleAddButton}
           extraClass={styles.mr25}/>
         <Button
-          disabled={queue.isEmpty() ? true : false}
-          isLoader={loader}
+          disabled={
+            !queue.isEmpty()
+              ? loader && loader !== ActiveQueueButton.Delete
+                ? true
+                : false
+              : true
+          }
+          isLoader={loader === ActiveQueueButton.Delete ? true : false}
           text="Удалить"
           onClick={handleDeleteButton}
           extraClass={styles.mr100}/>
         <Button
-          disabled={queue.isEmpty() ? true : false}
-          isLoader={loader}
+          disabled={
+            !queue.isEmpty()
+              ? loader && loader !== ActiveQueueButton.Clear
+                ? true
+                : false
+              : true
+          }
+          isLoader={loader === ActiveQueueButton.Clear ? true : false}
           text="Очистить"
           onClick={handleClearButton} />
       </div>

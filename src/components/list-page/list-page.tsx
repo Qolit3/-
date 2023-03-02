@@ -19,9 +19,18 @@ export const ListPage: React.FC = () => {
   const [tailBotCircle, setTailBotCircle] = useState<string>('');
   const [insertCircle, setInsertCircle] = useState<{ element: string, index: number } | undefined>();
   const [deleteCircle, setDeleteCircle] = useState<string>('');
-  const [loader, setLoader] = useState<boolean>(false);
+  const [loader, setLoader] = useState<ActiveListButton>();
 
-  let numIndex = Number(index);
+  enum ActiveListButton {
+    AddHead = 'addHead',
+    AddTail = 'addTail',
+    DeleteHead = 'deleteHead',
+    DeleteTail = 'deleteTail',
+    AddIndex = 'addIndex',
+    DeleteIndex = 'deleteIndex'
+  }
+
+  let numIndex = Number(index ? index : '-');
 
   const handleElementInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setElement(e.currentTarget.value);
@@ -32,7 +41,7 @@ export const ListPage: React.FC = () => {
   }
 
   const handleAppendButton = async () => {
-    setLoader(true);
+    setLoader(ActiveListButton.AddTail);
     setTailTopCircle(element);
 
     await timer(500);
@@ -62,11 +71,11 @@ export const ListPage: React.FC = () => {
         state: ElementStates.Default
       }
     }))
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const handlePrependButton = async () => {
-    setLoader(true);
+    setLoader(ActiveListButton.AddHead);
     setHeadTopCircle(element);
 
     await timer(500);
@@ -96,15 +105,15 @@ export const ListPage: React.FC = () => {
         state: ElementStates.Default
       }
     }))
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const handlePopButton = async () => {
-    setLoader(true);
+    setLoader(ActiveListButton.DeleteTail);
     setTailBotCircle(arr[arr.length - 1].element);
     await timer(500);
     list.pop();
-    
+
     const workArr = list.getList();
     setArr(workArr.map(item => {
       return {
@@ -113,11 +122,11 @@ export const ListPage: React.FC = () => {
       }
     }))
     setTailBotCircle('');
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const handleShiftButton = async () => {
-    setLoader(true);
+    setLoader(ActiveListButton.DeleteHead);
     setHeadBotCircle(arr[0].element);
     await timer(500);
 
@@ -130,11 +139,11 @@ export const ListPage: React.FC = () => {
       }
     }))
     setHeadBotCircle('');
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const handleInsertAtButton = async () => {
-    setLoader(true);
+    setLoader(ActiveListButton.AddIndex);
     let jumpArr = [...arr];
     setInsertCircle({
       element: element,
@@ -195,11 +204,11 @@ export const ListPage: React.FC = () => {
         state: ElementStates.Default
       }
     }))
-    setLoader(false);
+    setLoader(undefined);
   }
 
   const handleDeleteAtButton = async () => {
-    setLoader(true);
+    setLoader(ActiveListButton.DeleteIndex);
     const jumpArr = [...arr];
     let i = 0;
     let interval = setInterval(() => {
@@ -225,7 +234,7 @@ export const ListPage: React.FC = () => {
     setDeleteCircle(arr[numIndex].element);
 
     await timer(1000);
-    
+
     list.deleteAt(numIndex);
     const workArr = list.getList();
     setArr(workArr.map(item => {
@@ -235,12 +244,13 @@ export const ListPage: React.FC = () => {
       }
     }))
     setDeleteCircle('');
-    setLoader(true);
+    setLoader(undefined);
   }
 
   const timer = (ms: number) => {
     return new Promise(res => setTimeout(res, ms))
   }
+
   return (
     <SolutionLayout title="Связный список">
       <div className={styles.control_box}>
@@ -252,27 +262,53 @@ export const ListPage: React.FC = () => {
             maxLength={4}
             isLimitText={true} />
           <Button
-            isLoader={loader}
+            disabled={
+              element
+                ? loader && loader !== ActiveListButton.AddHead
+                  ? true
+                  : false
+                : true
+            }
+            isLoader={loader === ActiveListButton.AddHead ? true : false}
             onClick={handlePrependButton}
             text='Добавить в head'
             extraClass={styles.small_button}
           />
           <Button
-            isLoader={loader}
+            disabled={
+              element
+                ? loader && loader !== ActiveListButton.AddTail
+                  ? true
+                  : false
+                : true
+            }
+            isLoader={loader === ActiveListButton.AddTail ? true : false}
             onClick={handleAppendButton}
             text='Добавить в tail'
             extraClass={styles.small_button}
           />
           <Button
-            disabled={list.getSize() ? false : true}
-            isLoader={loader}
+            disabled={
+              list.getSize()
+                ? loader && loader !== ActiveListButton.DeleteHead
+                  ? true
+                  : false
+                : true
+            }
+            isLoader={loader === ActiveListButton.DeleteHead ? true : false}
             onClick={handleShiftButton}
             text='Удалить из head'
             extraClass={styles.small_button}
           />
           <Button
-            disabled={list.getSize() ? false : true}
-            isLoader={loader}
+            disabled={
+              list.getSize()
+                ? loader && loader !== ActiveListButton.DeleteTail
+                  ? true
+                  : false
+                : true
+            }
+            isLoader={loader === ActiveListButton.DeleteTail ? true : false}
             onClick={handlePopButton}
             text='Удалить из tail'
             extraClass={styles.small_button}
@@ -285,15 +321,27 @@ export const ListPage: React.FC = () => {
             onChange={handleIndexInputChange}
             extraClass={styles.input} />
           <Button
-            disabled={numIndex ? false : true}
-            isLoader={loader}
+            disabled={
+              numIndex >=0 && numIndex <= arr.length - 1 && element
+                ? loader && loader !== ActiveListButton.AddIndex
+                  ? true
+                  : false
+                : true
+            }
+            isLoader={loader === ActiveListButton.AddIndex ? true : false}
             onClick={handleInsertAtButton}
             text='Добавить по индексу'
             extraClass={styles.large_button}
           />
           <Button
-            disabled={list.getSize() && numIndex ? false : true}
-            isLoader={loader} 
+            disabled={
+              list.getSize() && numIndex >=0 && numIndex <= arr.length - 1
+                ? loader && loader !== ActiveListButton.DeleteIndex
+                  ? true
+                  : false
+                : true
+            }
+            isLoader={loader === ActiveListButton.DeleteIndex ? true : false}
             onClick={handleDeleteAtButton}
             text='Удалить по индексу'
             extraClass={styles.large_button}
@@ -308,9 +356,9 @@ export const ListPage: React.FC = () => {
                 letter={
                   numIndex === index && deleteCircle
                     ? ''
-                    : tailBotCircle && index === arr.length - 1 && index 
+                    : tailBotCircle && index === arr.length - 1 && index
                       ? ''
-                      : headBotCircle && !index 
+                      : headBotCircle && !index
                         ? ''
                         : item.element
                 }

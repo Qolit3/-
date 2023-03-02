@@ -8,13 +8,14 @@ import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 
 export const StringComponent: React.FC = () => {
-  let arr: string[] = [];
+  
   const [render, setRender] = useState<boolean>(false);
   const [arrWithState, setArrWithState] = useState<{state: ElementStates, element: string}[]>([]);
   const [loader, setLoader] = useState<boolean>(false);  
-  
+  const [arr, setArr] = useState<string[]>([])
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    arr = e.currentTarget.value.split('');
+    setArr(e.currentTarget.value.split(''));
   }
   
   const handleButtonClick = () => {
@@ -87,6 +88,7 @@ export const StringComponent: React.FC = () => {
           onChange={handleInputChange}
           extraClass={styles.input}  />
         <Button
+          disabled={arr[0] ? false : true}
           isLoader={loader}
           text="Развернуть"
           type="button"

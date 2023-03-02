@@ -31,6 +31,19 @@ export class Queue<T> implements IQueue<T> {
     this.head++;
   };
 
+  clear = () => {
+    if (this.isEmpty()) {
+      throw new Error("No elements in the queue");
+    }
+
+    for (let i = this.head; i < this.getTail(); i++) {
+      this.dequeue()
+    }
+    this.head = 0;
+    this.tail = 0;
+    this.length = 0;
+  }
+
   getSize = () => {
     return this.container.length
   }
