@@ -322,7 +322,7 @@ export const ListPage: React.FC = () => {
             extraClass={styles.input} />
           <Button
             disabled={
-              numIndex >=0 && numIndex <= arr.length - 1 && element
+              numIndex >=0 && numIndex <= arr.length && element
                 ? loader && loader !== ActiveListButton.AddIndex
                   ? true
                   : false
@@ -335,7 +335,7 @@ export const ListPage: React.FC = () => {
           />
           <Button
             disabled={
-              list.getSize() && numIndex >=0 && numIndex <= arr.length - 1
+              list.getSize() && numIndex >=0 && numIndex <= arr.length
                 ? loader && loader !== ActiveListButton.DeleteIndex
                   ? true
                   : false
@@ -396,7 +396,7 @@ export const ListPage: React.FC = () => {
                     />
                     : tailTopCircle && index === arr.length - 1 && index
                       ? <Circle
-                        letter={headTopCircle}
+                        letter={tailTopCircle}
                         isSmall={true}
                         state={ElementStates.Changing}
                       />

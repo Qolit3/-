@@ -86,9 +86,6 @@ export const QueuePage: React.FC = () => {
 
   const handleClearButton = () => {
     setLoader(ActiveQueueButton.Clear);
-    /*for (let i = queue.getHead(); i < queue.getTail(); i++) {
-      queue.dequeue()
-    }*/
     queue.clear();
     setClear(!clear);
     setLoader(undefined);

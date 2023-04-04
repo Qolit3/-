@@ -138,4 +138,4 @@ export const StackPage: React.FC = () => {
     </SolutionLayout>
   );
 };
-const stack = new Stack<string>();
+export const stack = new Stack<string>();

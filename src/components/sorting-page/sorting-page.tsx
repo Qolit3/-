@@ -21,7 +21,6 @@ export const SortingPage: React.FC = () => {
   const randomArr = () => {
     setLoader(ActiveSortButton.NewArr)
     
-    
     let workArr = new Array(3 + Math.floor(Math.random() * 14));
     for (let i = 0; i < workArr.length; i++) {
       workArr[i] = {
@@ -35,135 +34,36 @@ export const SortingPage: React.FC = () => {
     setLoader(undefined)
   }
 
-  async function upBubbleSort() {
-    setLoader(ActiveSortButton.Ascending)
-    let sortArr = [...arr];
-    for (let i = 0; i + 1 < sortArr.length; i++) {
-      for (let j = 0; j + 1 < sortArr.length - i; j++) {
-        sortArr[j].state = ElementStates.Changing;
-        sortArr[j + 1].state = ElementStates.Changing;
-        if (sortArr[j].element > sortArr[j + 1].element) {
-          await swap(sortArr, j, j + 1);
-          setArr([...sortArr])
-        } else {
-          await timer(1000);
-          setArr([...sortArr])
-        }
-        sortArr[j].state = ElementStates.Default;
-        sortArr[j + 1].state = ElementStates.Default;
-      }
-      sortArr[sortArr.length - i - 1].state = ElementStates.Modified;
-      if (i === sortArr.length - 2) {
-        sortArr[sortArr.length - i - 2].state = ElementStates.Modified;
-      }
-      setArr([...sortArr])
-    }
-    setLoader(undefined)
-  }
-
-  async function downBubbleSort() {
-    setLoader(ActiveSortButton.Descending)
-    let sortArr = [...arr];
-    for (let i = 0; i + 1 < sortArr.length; i++) {
-      for (let j = 0; j + 1 < sortArr.length - i; j++) {
-        sortArr[j].state = ElementStates.Changing;
-        sortArr[j + 1].state = ElementStates.Changing;
-        if (sortArr[j].element < sortArr[j + 1].element) {
-          await swap(sortArr, j, j + 1);
-          setArr([...sortArr])
-        } else {
-          await timer(1000);
-          setArr([...sortArr])
-        }
-        sortArr[j].state = ElementStates.Default;
-        sortArr[j + 1].state = ElementStates.Default;
-      }
-      sortArr[sortArr.length - i - 1].state = ElementStates.Modified;
-      if (i === sortArr.length - 2) {
-        sortArr[sortArr.length - i - 2].state = ElementStates.Modified;
-      }
-      setArr([...sortArr])
-    }
-    setLoader(undefined)
-  }
-
-  async function downSelectionSort() {
-    setLoader(ActiveSortButton.Descending)
-    let sortArr = [...arr];
-    for (let i = 0; i < sortArr.length; i++) {
-      for (let j = i + 1; j < sortArr.length; j++) {
-        sortArr[j].state = ElementStates.Changing;
-        sortArr[i].state = ElementStates.Changing;
-        if (sortArr[j].element > sortArr[i].element) {
-          await swap(sortArr, j, i);
-          setArr([...sortArr])
-        } else {
-          await timer(1000);
-          setArr([...sortArr])
-        }
-        sortArr[j].state = ElementStates.Default;
-        sortArr[i].state = ElementStates.Default;
-      }
-      sortArr[i].state = ElementStates.Modified;
-      if (i === sortArr.length - 2) {
-        sortArr[sortArr.length - i - 2].state = ElementStates.Modified;
-      }
-      setArr([...sortArr])
-    }
-    setLoader(undefined)
-  }
-
-  async function upSelectionSort() {
-    setLoader(ActiveSortButton.Ascending)
-    let sortArr = [...arr];
-    for (let i = 0; i < sortArr.length; i++) {
-      for (let j = i + 1; j < sortArr.length; j++) {
-        sortArr[j].state = ElementStates.Changing;
-        sortArr[i].state = ElementStates.Changing;
-        if (sortArr[j].element < sortArr[i].element) {
-
-          await swap(sortArr, j, i);
-          setArr([...sortArr])
-        } else {
-          await timer(1000);
-          setArr([...sortArr])
-        }
-        sortArr[j].state = ElementStates.Default;
-        sortArr[i].state = ElementStates.Default;
-      }
-      sortArr[i].state = ElementStates.Modified;
-      if (i === sortArr.length - 2) {
-        sortArr[sortArr.length - i - 2].state = ElementStates.Modified;
-      }
-      setArr([...sortArr])
-    }
-    setLoader(undefined)
-  }
-
   const upSort = () => {
+    setLoader(ActiveSortButton.Ascending)
+    let renderArr: { element: number, state: ElementStates }[][] = [];
     isBubble
-      ? upBubbleSort()
-      : upSelectionSort()
+      ? renderArr = upBubbleSort(arr)
+      : renderArr = upSelectionSort(arr)
+    
+    for(let i = 0; i < renderArr.length; i++) {
+      setTimeout(() => {
+        setArr([...renderArr[i]]);
+        setLoader(undefined);
+      }, i*500)
+    }
+    
   }
 
   const downSort = () => {
+    setLoader(ActiveSortButton.Descending)
+    let renderArr: { element: number, state: ElementStates }[][] = [];
     isBubble
-      ? downBubbleSort()
-      : downSelectionSort()
+      ? renderArr = downBubbleSort(arr)
+      : renderArr = downSelectionSort(arr)
+
+    for(let i = 0; i < renderArr.length; i++) {
+      setTimeout(() => {
+        setArr([...renderArr[i]]);
+        setLoader(undefined);
+      }, i*500)
+    }  
   }
-
-  const timer = (ms: number) => {
-    return new Promise(res => setTimeout(res, ms))
-  }
-
-  async function swap(arr: any, first: any, second: any) {
-    await timer(1000);
-
-    const tmp = arr[first].element;
-    arr[first].element = arr[second].element;
-    arr[second].element = tmp;
-  }
-
 
   return (
     <SolutionLayout title="Сортировка массива">
@@ -228,3 +128,206 @@ export const SortingPage: React.FC = () => {
     </SolutionLayout>
   );
 };
+
+function swap(arr: any, first: any, second: any) {
+  const tmp = arr[first].element;
+  arr[first].element = arr[second].element;
+  arr[second].element = tmp;
+}
+
+export function upBubbleSort(array: { element: number, state: ElementStates }[]) {
+  if(!array.length) {
+    throw new Error('zero length')
+  } else if(array.length === 1) {
+    throw new Error('one symbol')
+  }
+
+  let sortArr = [...array];
+  let snapArr = [];
+  for (let i = 0; i + 1 < sortArr.length; i++) {
+    for (let j = 0; j + 1 < sortArr.length - i; j++) {
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Changing
+      };
+      sortArr[j+1] = {
+        element: sortArr[j+1].element,
+        state: ElementStates.Changing
+      };
+      if (sortArr[j].element > sortArr[j + 1].element) {
+        swap(sortArr, j, j + 1);
+        snapArr.push([...sortArr])
+      } else {
+        snapArr.push([...sortArr])
+      }
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Default
+      };
+      sortArr[j+1] = {
+        element: sortArr[j+1].element,
+        state: ElementStates.Default
+      };
+    }
+    sortArr[sortArr.length - i - 1] = {
+      element: sortArr[sortArr.length - i - 1].element,
+      state: ElementStates.Modified
+    };
+    if (i === sortArr.length - 2) {
+      sortArr[sortArr.length - i - 2] = {
+        element: sortArr[sortArr.length - i - 2].element,
+        state: ElementStates.Modified
+      };
+    }
+    snapArr.push([...sortArr])
+  }
+
+  return [...snapArr];
+}
+
+export function downBubbleSort(array: { element: number, state: ElementStates }[]) {
+  if(!array.length) {
+    throw new Error('zero length')
+  } else if(array.length === 1) {
+    throw new Error('one symbol')
+  }
+
+  let snapArr = [];
+  let sortArr = [...array];
+  for (let i = 0; i + 1 < sortArr.length; i++) {
+    for (let j = 0; j + 1 < sortArr.length - i; j++) {
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Changing
+      };
+      sortArr[j+1] = {
+        element: sortArr[j+1].element,
+        state: ElementStates.Changing
+      };
+      if (sortArr[j].element < sortArr[j + 1].element) {
+        swap(sortArr, j, j + 1);
+        snapArr.push([...sortArr])
+      } else {
+        snapArr.push([...sortArr])
+      }
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Default
+      };
+      sortArr[j + 1] = {
+        element: sortArr[j + 1].element,
+        state: ElementStates.Default
+      };
+    }
+    sortArr[sortArr.length - i - 1] = {
+      element: sortArr[sortArr.length - i - 1].element,
+      state: ElementStates.Modified
+    };
+    if (i === sortArr.length - 2) {
+      sortArr[sortArr.length - i - 2] = {
+        element: sortArr[sortArr.length - i - 2].element,
+        state: ElementStates.Modified
+      };
+    }
+    snapArr.push([...sortArr])
+  }
+  return [...snapArr]
+}
+
+export function downSelectionSort(array: { element: number, state: ElementStates }[]) {
+  if(!array.length) {
+    throw new Error('zero length')
+  } else if(array.length === 1) {
+    throw new Error('one symbol')
+  }
+
+  let snapArr = [];
+  let sortArr = [...array];
+  for (let i = 0; i < sortArr.length; i++) {
+    for (let j = i + 1; j < sortArr.length; j++) {
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Changing
+      };
+      sortArr[i] = {
+        element: sortArr[i].element,
+        state: ElementStates.Changing
+      };
+      if (sortArr[j].element > sortArr[i].element) {
+        swap(sortArr, j, i);
+        snapArr.push([...sortArr])
+      } else {
+        snapArr.push([...sortArr])
+      }
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Default
+      };
+      sortArr[i] = {
+        element: sortArr[i].element,
+        state: ElementStates.Default
+      };
+    }
+    sortArr[i] = {
+        element: sortArr[i].element,
+        state: ElementStates.Modified
+      };
+    if (i === sortArr.length - 2) {
+      sortArr[sortArr.length - i - 2] = {
+        element: sortArr[sortArr.length - i -2].element,
+        state: ElementStates.Modified
+      };
+    }
+    snapArr.push([...sortArr])
+  }
+  return [...snapArr]
+}
+
+export function upSelectionSort(array: { element: number, state: ElementStates }[]) {
+  if(!array.length) {
+    throw new Error('zero length')
+  } else if(array.length === 1) {
+    throw new Error('one symbol')
+  }
+  
+  let sortArr = [...array];
+  let snapArr = [];
+  for (let i = 0; i < sortArr.length; i++) {
+    for (let j = i + 1; j < sortArr.length; j++) {
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Changing
+      };
+      sortArr[i] = {
+        element: sortArr[i].element,
+        state: ElementStates.Changing
+      };
+      if (sortArr[j].element < sortArr[i].element) {
+        swap(sortArr, j, i);
+        snapArr.push([...sortArr])
+      } else {
+        snapArr.push([...sortArr])
+      }
+      sortArr[j] = {
+        element: sortArr[j].element,
+        state: ElementStates.Default
+      };
+      sortArr[i] = {
+        element: sortArr[i].element,
+        state: ElementStates.Default
+      };
+    }
+    sortArr[i] = {
+        element: sortArr[i].element,
+        state: ElementStates.Modified
+      };
+    if (i === sortArr.length - 2) {
+      sortArr[sortArr.length - i - 2] = {
+        element: sortArr[sortArr.length - i -2].element,
+        state: ElementStates.Modified
+      };
+    }
+    snapArr.push([...sortArr])
+  }
+  return [...snapArr];
+}
