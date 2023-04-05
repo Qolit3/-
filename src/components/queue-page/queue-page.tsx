@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ElementStates } from "../../types/element-states";
 import { Queue } from "../queue/queue";
 import { Button } from "../ui/button/button";
@@ -6,11 +6,12 @@ import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from './queue-page.module.css'
+import { useForm } from "../../hooks/useForm";
 
 const queue = new Queue<string>(7);
 
 export const QueuePage: React.FC = () => {
-  const [element, setElement] = useState<string>('');
+  const {values, handleChange, setValues} = useForm({});
   const [arr, setArr] = useState<{ element: string | undefined, state: ElementStates }[]>([]);
   const [clear, setClear] = useState<boolean>(false);
   const [loader, setLoader] = useState<ActiveQueueButton>();
@@ -37,14 +38,10 @@ export const QueuePage: React.FC = () => {
 
   }, [clear])
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setElement(e.currentTarget.value);
-  }
-
   async function handleAddButton() {
     setLoader(ActiveQueueButton.Add);
-    queue.enqueue(element);
-    setElement('');
+    queue.enqueue(values.element);
+    setValues({...values, [values.element]: ''});
     const workArr = queue.getContainer();
 
     setArr(workArr.map((item, index) => {
@@ -98,10 +95,10 @@ export const QueuePage: React.FC = () => {
   return (
     <SolutionLayout title="Очередь">
       <div className={styles.input_box}>
-        <Input maxLength={4} isLimitText={true} value={element} onChange={handleInputChange} extraClass={`${styles.input} ${styles.mr25}`} />
+        <Input maxLength={4} isLimitText={true} value={values.element} name="element" onChange={handleChange} extraClass={`${styles.input} ${styles.mr25}`} />
         <Button
           disabled={
-            element
+            values.element
               ? loader && loader !== ActiveQueueButton.Add
                 ? true
                 : false
@@ -137,14 +134,16 @@ export const QueuePage: React.FC = () => {
       </div>
       <div className={styles.circle_box}>
         {arr.map((item, index) => {
-          return <Circle
-            key={index}
-            letter={item.element}
-            head={index === queue.getHead() && !queue.isEmpty() ? 'head' : ''}
-            tail={index === queue.getTail() - 1 && !queue.isEmpty() ? 'tail' : ''}
-            state={item.state}
-            extraClass={styles.mr25}
-            index={index} />
+          return (
+            <Circle
+              key={index}
+              letter={item.element}
+              head={index === queue.getHead() && !queue.isEmpty() ? 'head' : ''}
+              tail={index === queue.getTail() - 1 && !queue.isEmpty() ? 'tail' : ''}
+              state={item.state}
+              extraClass={styles.mr25}
+              index={index} />
+          );
         })}
       </div>
     </SolutionLayout>

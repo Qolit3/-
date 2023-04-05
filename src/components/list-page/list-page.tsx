@@ -7,11 +7,10 @@ import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from './list-page.module.css'
+import { useForm } from "../../hooks/useForm";
 
 export const ListPage: React.FC = () => {
-
-  const [element, setElement] = useState<string>('');
-  const [index, setIndex] = useState<string>('');
+  const {values, handleChange, setValues} = useForm({});
   const [arr, setArr] = useState<{ element: string, state: ElementStates }[]>([]);
   const [headTopCircle, setHeadTopCircle] = useState<string>('');
   const [tailTopCircle, setTailTopCircle] = useState<string>('');
@@ -30,23 +29,15 @@ export const ListPage: React.FC = () => {
     DeleteIndex = 'deleteIndex'
   }
 
-  let numIndex = Number(index ? index : '-');
-
-  const handleElementInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setElement(e.currentTarget.value);
-  }
-
-  const handleIndexInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setIndex(e.currentTarget.value);
-  }
+  let numIndex = Number(values.index ? values.index : '-');
 
   const handleAppendButton = async () => {
     setLoader(ActiveListButton.AddTail);
-    setTailTopCircle(element);
+    setTailTopCircle(values.element);
 
     await timer(500);
 
-    list.append(element);
+    list.append(values.element);
     const workArr = list.getList();
     setTailTopCircle('');
 
@@ -76,11 +67,11 @@ export const ListPage: React.FC = () => {
 
   const handlePrependButton = async () => {
     setLoader(ActiveListButton.AddHead);
-    setHeadTopCircle(element);
+    setHeadTopCircle(values.element);
 
     await timer(500);
 
-    list.prepend(element);
+    list.prepend(values.element);
     const workArr = list.getList();
     setHeadTopCircle('');
 
@@ -146,7 +137,7 @@ export const ListPage: React.FC = () => {
     setLoader(ActiveListButton.AddIndex);
     let jumpArr = [...arr];
     setInsertCircle({
-      element: element,
+      element: values.element,
       index: 0
     });
 
@@ -154,7 +145,7 @@ export const ListPage: React.FC = () => {
 
     let interval = setInterval(() => {
       setInsertCircle({
-        element: element,
+        element: values.element,
         index: i
       })
       setArr(jumpArr.map((item, index) => {
@@ -175,7 +166,7 @@ export const ListPage: React.FC = () => {
 
     await timer(numIndex * 1000 + 500);
 
-    list.insertAt(element, numIndex);
+    list.insertAt(values.element, numIndex);
     const workArr = list.getList();
     setInsertCircle(undefined)
     setArr(workArr.map((item, index) => {
@@ -256,14 +247,15 @@ export const ListPage: React.FC = () => {
       <div className={styles.control_box}>
         <div className={styles.input_box}>
           <Input
-            value={element}
-            onChange={handleElementInputChange}
+            name="element"
+            value={values.element}
+            onChange={handleChange}
             extraClass={styles.input}
             maxLength={4}
             isLimitText={true} />
           <Button
             disabled={
-              element
+              values.element
                 ? loader && loader !== ActiveListButton.AddHead
                   ? true
                   : false
@@ -276,7 +268,7 @@ export const ListPage: React.FC = () => {
           />
           <Button
             disabled={
-              element
+              values.element
                 ? loader && loader !== ActiveListButton.AddTail
                   ? true
                   : false
@@ -317,12 +309,14 @@ export const ListPage: React.FC = () => {
         </div>
         <div className={styles.input_box}>
           <Input
-            value={index}
-            onChange={handleIndexInputChange}
+            name="index"
+            type="number"
+            value={values.index}
+            onChange={handleChange}
             extraClass={styles.input} />
           <Button
             disabled={
-              numIndex >=0 && numIndex <= arr.length && element
+              numIndex >=0 && numIndex <= arr.length && values.element
                 ? loader && loader !== ActiveListButton.AddIndex
                   ? true
                   : false

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
 import { ElementStates } from "../../types/element-states";
 import { Stack } from "../stack/stack";
 import { Button } from "../ui/button/button";
@@ -6,9 +6,10 @@ import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from './stack-page.module.css';
+import { useForm } from "../../hooks/useForm";
 
 export const StackPage: React.FC = () => {
-  const [element, setElement] = useState<string>('');
+  const {values, handleChange, setValues} = useForm({});
   const [arr, setArr] = useState<{element: string, state: ElementStates}[]>([]);
   const [loader, setLoader] = useState<ActiveStackButton>();
   enum ActiveStackButton {
@@ -17,14 +18,10 @@ export const StackPage: React.FC = () => {
     Clear = 'clear'
   } 
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setElement(e.currentTarget.value);
-  }
-
   async function handleAddButton () {
     setLoader(ActiveStackButton.Add);
-    stack.push(element);
-    setElement('');
+    stack.push(values.element);
+    setValues({...values, [values.element]: ''});
     const workArr = stack.getContainer();
 
     setArr(workArr.map((item, index) => {
@@ -85,13 +82,14 @@ export const StackPage: React.FC = () => {
         <Input
           maxLength={4}
           isLimitText={true}
-          value={element}
-          onChange={handleInputChange}
+          name="element"
+          value={values.element}
+          onChange={handleChange}
           extraClass={`${styles.input} ${styles.mr25}`} />
         <Button 
           isLoader={loader === ActiveStackButton.Add ? true : false}
           disabled={
-            element
+            values.element
               ? loader && loader !== ActiveStackButton.Add
                 ? true
                 : false
@@ -126,13 +124,15 @@ export const StackPage: React.FC = () => {
       </div>
       <div className={styles.circle_box}>
         {arr.map((item, index) => {
-          return <Circle
-            key={index}
-            head={index === arr.length-1 ? 'top': ''}
-            letter={item.element}
-            state={item.state}
-            extraClass={styles.mr25}
-            index={index}/>
+          return (
+            <Circle
+              key={index}
+              head={index === arr.length-1 ? 'top': ''}
+              letter={item.element}
+              state={item.state}
+              extraClass={styles.mr25}
+              index={index}/>
+          )
         })}
       </div>
     </SolutionLayout>

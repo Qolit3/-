@@ -1,8 +1,9 @@
 import { Colors } from "../../src/types/colors";
+import { circle, head, tail } from "../constants/constants";
 
 describe('queue algorithm tests', () => {
   it('Кнопка добавления недопступна при пустом инпуте', () => {
-    cy.visit('http://localhost:3000/queue');
+    cy.visit('queue');
     
     if(cy.get('input')) {
       cy.get('button').eq(1).should('be.disabled')
@@ -10,16 +11,16 @@ describe('queue algorithm tests', () => {
   })
 
   it('Корректное добавление и удаление элементов', () => {
-    cy.visit('http://localhost:3000/queue');
+    cy.visit('queue');
     cy.get('button').contains('Добавить').as('add')
     cy.get('button').contains('Удалить').as('remove')
 
     cy.get('input').type('1');
     cy.get('@add').click();
 
-    cy.get('div[class*="circle_circle"]').as('circle');
-    cy.get('div[class*="circle_head"]').as('circle-head');
-    cy.get('div[class*="circle_tail"]').as('circle-tail');
+    cy.get(circle).as('circle');
+    cy.get(head).as('circle-head');
+    cy.get(tail).as('circle-tail');
 
     cy.get('@circle')
       .eq(0)
@@ -92,14 +93,14 @@ describe('queue algorithm tests', () => {
   })
 
   it('Очистка очереди', () => {
-    cy.visit('http://localhost:3000/queue');
+    cy.visit('queue');
     cy.get('button').contains('Добавить').as('add')
     cy.get('button').contains('Очистить').as('clear')
 
     cy.get('input').type('1');
     cy.get('@add').click();
 
-    cy.get('div[class*="circle_circle"]').as('circle');
+    cy.get(circle).as('circle');
     
     cy.wait(500);
 

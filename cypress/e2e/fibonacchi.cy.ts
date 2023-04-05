@@ -1,6 +1,8 @@
+import { circle } from "../constants/constants";
+
 describe('fibonacci algorithm test', () => {
   it('кнопка недоступна при пустом инпуте', () => {
-    cy.visit('http://localhost:3000/fibonacci');
+    cy.visit('fibonacci');
     
     if(cy.get('input')) {
       cy.get('button').last().should('be.disabled')
@@ -8,12 +10,12 @@ describe('fibonacci algorithm test', () => {
   })
 
   it('Корректная генерация чисел', () => {
-    cy.visit('http://localhost:3000/fibonacci');
+    cy.visit('fibonacci');
 
     cy.get('input').type('19');
     cy.get('button').last().click();
 
-    cy.get('div[class*="circle_circle"]').as('circle');
+    cy.get(circle).as('circle');
     cy.get("@circle").eq(0).should("contain", "1")
     cy.get("@circle").eq(1).should("contain", "1")
     cy.get("@circle").eq(2).should("contain", "2")

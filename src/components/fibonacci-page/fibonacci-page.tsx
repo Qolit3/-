@@ -57,6 +57,7 @@ export const FibonacciPage: React.FC = () => {
           type='number'
           step={1}
           min={0}
+          value={number}
           onChange={handleInputChange}
           extraClass={styles.input}/>
         <Button
@@ -68,11 +69,13 @@ export const FibonacciPage: React.FC = () => {
       </div>
       <div className={styles.circle_box}>
         {fibonachiArr.map((item, index) => {
-          return <Circle
-            key={index}
-            letter={`${item}`}
-            extraClass={styles.circle}
-            tail={`${index}`}/>
+          return (
+            <Circle
+              key={index}
+              letter={`${item}`}
+              extraClass={styles.circle}
+              tail={`${index}`}/>
+          )
         })}
       </div>
     </SolutionLayout>

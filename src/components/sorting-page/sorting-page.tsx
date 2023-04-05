@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Direction } from "../../types/direction";
 import { ElementStates } from "../../types/element-states";
 import { Button } from "../ui/button/button";
@@ -33,6 +33,10 @@ export const SortingPage: React.FC = () => {
     setArr([...workArr]);
     setLoader(undefined)
   }
+
+  useEffect(() => {
+    randomArr()
+  }, [])
 
   const upSort = () => {
     setLoader(ActiveSortButton.Ascending)
@@ -118,11 +122,13 @@ export const SortingPage: React.FC = () => {
 
       <div className={styles.columns_box}>
         {arr.map((item, index) => {
-          return <Column
-            key={index}
-            index={item.element}
-            state={item.state}
-            extraClass={styles.column} />
+          return (
+            <Column
+              key={index}
+              index={item.element}
+              state={item.state}
+              extraClass={styles.column} />
+          )
         })}
       </div>
     </SolutionLayout>

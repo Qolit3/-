@@ -62,6 +62,7 @@ export const StringComponent: React.FC = () => {
           <Input
             isLimitText={true}
             maxLength={11}
+            value={arr.join('')}
             onChange={handleInputChange}
             extraClass={styles.input} />
           <Button
@@ -73,11 +74,13 @@ export const StringComponent: React.FC = () => {
         </div>
         <div className={styles.circle_box}>
           {arrWithState.map((item, index) => {
-            return <Circle
-              key={index}
-              letter={item.element}
-              state={item.state}
-              extraClass={styles.circle} />
+            return (
+              <Circle
+                key={index}
+                letter={item.element}
+                state={item.state}
+                extraClass={styles.circle} />
+            )
           })}
         </div>
       </div>

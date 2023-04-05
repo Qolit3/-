@@ -1,8 +1,9 @@
 import { Colors } from "../../src/types/colors";
+import { circle, head, index, tail } from "../constants/constants";
 
 describe('list algorithm tests', () => {
   it('Кнопки обычного добавления, удаления и добавления по индексу недоступны при пустом инпуте', () => {
-    cy.visit('http://localhost:3000/list');    
+    cy.visit('list');    
     cy.get('input').eq(0).clear();
     cy.get('button').contains('Добавить в head').parent().should('be.disabled');
     cy.get('button').contains('Добавить в tail').parent().should('be.disabled');
@@ -11,7 +12,7 @@ describe('list algorithm tests', () => {
   })
 
   it('Проверка анимаций добавления и удаления в head', () => {
-    cy.visit('http://localhost:3000/list'); 
+    cy.visit('list'); 
     cy.get('input').eq(0).as('element-input');
     cy.get('button').contains('Добавить в head').as('head-add')
     cy.get('button').contains('Удалить из head').as('head-remove')
@@ -19,10 +20,10 @@ describe('list algorithm tests', () => {
     cy.get('@element-input').type('1');
     cy.get('@head-add').click();
 
-    cy.get('div[class*="circle_circle"]').as('circle');
-    cy.get('div[class*="circle_head"]').as('circle-head');
-    cy.get('div[class*="circle_tail"]').as('circle-tail');
-    cy.get('p[class*="circle_index"]').as('circle-index');
+    cy.get(circle).as('circle');
+    cy.get(head).as('circle-head');
+    cy.get(tail).as('circle-tail');
+    cy.get(index).as('circle-index');
 
     cy.get('@circle')
       .eq(0)
@@ -50,7 +51,7 @@ describe('list algorithm tests', () => {
     cy.get('@head-add').click();
 
     cy.get('@circle-head')
-      .contains('div[class*="circle_circle"]', '2')
+      .contains(circle, '2')
       .should('contain', '2')
       .and('have.css', 'border', Colors.changing)
     
@@ -90,7 +91,7 @@ describe('list algorithm tests', () => {
       .eq(0)
       .should('contain', '')
     cy.get('@circle-tail')
-      .contains('div[class*="circle_circle"]', '2')
+      .contains(circle, '2')
       .should('contain', '2')
       .and('have.css', 'border', Colors.changing)
 
@@ -111,7 +112,7 @@ describe('list algorithm tests', () => {
   })
 
   it('Проверка анимаций добавления и удаления в tail', () => {
-    cy.visit('http://localhost:3000/list'); 
+    cy.visit('list'); 
     cy.get('input').eq(0).as('element-input');
     cy.get('button').contains('Добавить в tail').as('tail-add')
     cy.get('button').contains('Удалить из tail').as('tail-remove')
@@ -119,10 +120,10 @@ describe('list algorithm tests', () => {
     cy.get('@element-input').type('1');
     cy.get('@tail-add').click();
 
-    cy.get('div[class*="circle_circle"]').as('circle');
-    cy.get('div[class*="circle_head"]').as('circle-head');
-    cy.get('div[class*="circle_tail"]').as('circle-tail');
-    cy.get('p[class*="circle_index"]').as('circle-index');
+    cy.get(circle).as('circle');
+    cy.get(head).as('circle-head');
+    cy.get(tail).as('circle-tail');
+    cy.get(index).as('circle-index');
 
     cy.get('@circle')
       .eq(0)
@@ -209,7 +210,7 @@ describe('list algorithm tests', () => {
       .eq(2)
       .should('contain', '')
     cy.get('@circle-tail')
-      .contains('div[class*="circle_circle"]', '3')
+      .contains(circle, '3')
       .should('contain', '3')
       .and('have.css', 'border', Colors.changing)
 
@@ -230,7 +231,7 @@ describe('list algorithm tests', () => {
   })
 
   it('Добавление и удаление по индексу', () => {
-    cy.visit('http://localhost:3000/list'); 
+    cy.visit('list'); 
     cy.get('input').eq(0).as('element-input');
     cy.get('input').eq(1).as('index-input');
     cy.get('button').contains('Добавить по индексу').as('index-add')
@@ -240,10 +241,10 @@ describe('list algorithm tests', () => {
     cy.get('@index-input').type('0');
     cy.get('@index-add').click();
 
-    cy.get('div[class*="circle_circle"]').as('circle');
-    cy.get('div[class*="circle_head"]').as('circle-head');
-    cy.get('div[class*="circle_tail"]').as('circle-tail');
-    cy.get('p[class*="circle_index"]').as('circle-index');
+    cy.get(circle).as('circle');
+    cy.get(head).as('circle-head');
+    cy.get(tail).as('circle-tail');
+    cy.get(index).as('circle-index');
 
     cy.get('@circle')
       .eq(0)
@@ -272,7 +273,7 @@ describe('list algorithm tests', () => {
     cy.get('@index-add').click();
 
     cy.get('@circle-head')
-      .contains('div[class*="circle_circle"]', '2')
+      .contains(circle, '2')
       .should('contain', '2')
       .and('have.css', 'border', Colors.changing)
     
@@ -312,7 +313,7 @@ describe('list algorithm tests', () => {
 
     cy.get('@circle-head')
       .eq(0)
-      .contains('div[class*="circle_circle"]', '3')
+      .contains(circle, '3')
       .should('contain', '3')
       .and('have.css', 'border', Colors.changing)
     
@@ -323,7 +324,7 @@ describe('list algorithm tests', () => {
       .should('have.css', 'border', Colors.changing)
     cy.get('@circle-head')
       .eq(1)
-      .contains('div[class*="circle_circle"]', '3')
+      .contains(circle, '3')
       .should('contain', '3')
       .and('have.css', 'border', Colors.changing)
 
@@ -379,7 +380,7 @@ describe('list algorithm tests', () => {
       .should('contain', '')
     cy.get('@circle-tail')
       .eq(1)
-      .contains('div[class*="circle_circle"]', '3')
+      .contains(circle, '3')
       .should('contain', '3')
       .and('have.css', 'border', Colors.changing)
 
